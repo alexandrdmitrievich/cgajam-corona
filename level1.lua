@@ -16,8 +16,28 @@ local newBox = require ("box").newBox
 --------------------------------------------
 
 -- forward declarations and other locals
-local screenW, screenH, halfW = display.actualContentWidth, display.actualContentHeight, display.contentCenterX
-
+local screenW, screenH, halfW, halfH = display.actualContentWidth, display.actualContentHeight, display.contentCenterX, display.contentCenterY
+local startT = os.time();
+local tiltAng = 0;
+local Score = display.newText({
+    text = '0',     
+    x = halfW,
+    y = halfH,
+   -- stroke = {0,0,0}
+    width = 128,
+    font = 'larabieb.ttf',   
+    fontSize = 14,
+    align = "right"  -- Alignment parameter
+  })
+--Score:setFillColor(0);
+local ScoreBox = display.newRect (
+    Score.x,
+    Score.y,
+    Score.width,
+    Score.height
+  )
+ScoreBox:setFillColor(0);
+ScoreBox:rotate(tiltAng);
 
 function scene:create( event )
 
@@ -53,7 +73,15 @@ function scene:create( event )
     bn:addToScene();
   end, 0)
 
-  
+  timer.performWithDelay(500, function()
+    
+    local dt = os.time() - startT;
+    print (startT, os.time(), dt)
+    ScoreBox:rotate(tiltAng)
+    
+    Score.text = dt;
+    Score:rotate(tiltAng)
+  end,0)
   
   
 	local grass = display.newImageRect( "grass.png", screenW, 1 )
@@ -84,6 +112,8 @@ function scene:create( event )
 	sceneGroup:insert( grass2)
   sceneGroup:insert( grass3)
 	sceneGroup:insert( grass4)
+  sceneGroup:insert( ScoreBox)
+  sceneGroup:insert( Score)
 	--sceneGroup:insert( crate )
   --sceneGroup:insert( crate2 )
   
@@ -147,6 +177,7 @@ local function onTilt( event )
 	-- On tvOS, gravity is in the orientation of the device attached to the event
 	if ( event.device ) then
 		physics.setGravity( ( 9.8 * event.xGravity ), ( -9.8 * event.yGravity ) )
+    tiltAng = math.atan(event.xGravity/event.yGravity)
 	else
 		physics.setGravity( ( -9.8 * event.yGravity ), ( -9.8 * event.xGravity ) )
 	end

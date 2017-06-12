@@ -71,9 +71,10 @@ function _M.newBox(params)
   function box:destroy()
     print ('Bye')
     
-    
-    self:removeSelf() 
-    self = nil;
+    if(self) then
+      self:removeSelf() 
+      self = nil;
+    end
     
   end
   
